@@ -5,4 +5,4 @@ Pillow
 torchaudio
 requests
 beautifulsoup4
-
+speechbrain

@@ -8,3 +8,5 @@ newspaper3k
 yt-dlp
 psaw
 openai
+lxml
+cssselect

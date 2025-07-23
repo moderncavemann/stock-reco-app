@@ -1,32 +1,28 @@
 import torch
 import torchaudio
-from transformers import AutoModelForAudioClassification, AutoProcessor
+from speechbrain.pretrained import SpeakerRecognition
 
-model_name = "superb/wav2vec2-base-superb-er"
-model = AutoModelForAudioClassification.from_pretrained(model_name)
-processor = AutoProcessor.from_pretrained(model_name)
+# 下载模型（第一次加载会缓存）
+emotion_model = torch.hub.load('speechbrain/emotion-recognition-wav2vec2-IEMOCAP', 'custom')
 
-# label 映射（示例，可按你需求调整评分逻辑）
+# 手动映射情绪分数
 EMOTION_SCORE = {
-    "angry": -1.0, "sad": -0.8, "fearful": -0.6, "disgust": -0.5,
-    "neutral": 0.0, "happy": 0.8, "surprised": 0.4, "calm": 0.3
+    "angry": -0.9, "sad": -0.6, "fearful": -0.4, "disgust": -0.3,
+    "neutral": 0.0, "happy": 0.7, "surprise": 0.4, "calm": 0.3
 }
 
 def analyze_audio(uploaded_file):
-    waveform, sample_rate = torchaudio.load(uploaded_file)
+    # 保存上传音频为临时文件（Streamlit 需要这样）
+    with open("temp.wav", "wb") as f:
+        f.write(uploaded_file.read())
 
-    # 确保 mono 且 16kHz
-    if sample_rate != 16000:
-        resample = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=16000)
-        waveform = resample(waveform)
-    if waveform.shape[0] > 1:
-        waveform = waveform.mean(dim=0, keepdim=True)
+    signal, fs = torchaudio.load("temp.wav")
+    if fs != 16000:
+        signal = torchaudio.transforms.Resample(fs, 16000)(signal)
 
-    inputs = processor(waveform.squeeze(), sampling_rate=16000, return_tensors="pt")
-    with torch.no_grad():
-        outputs = model(**inputs)
-    predicted_label = model.config.id2label[outputs.logits.argmax(-1).item()]
-    return EMOTION_SCORE.get(predicted_label.lower(), 0.0)
+    prediction = emotion_model.classify_file("temp.wav")
+    label = prediction[3]  # e.g. "happy"
 
+    return EMOTION_SCORE.get(label.lower(), 0.0)
 
 

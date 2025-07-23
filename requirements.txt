@@ -4,9 +4,5 @@ torch
 Pillow
 torchaudio
 requests
-newspaper3k
-yt-dlp
-psaw
-openai
-lxml
-cssselect
+beautifulsoup4
+

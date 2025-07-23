@@ -1,27 +1,26 @@
 import requests
-from newspaper import Article
+from bs4 import BeautifulSoup
 
-# 临时抓取逻辑：从 Yahoo Finance 新闻页提取第一个文章内容
 def fetch_multimodal_data(ticker):
-    # 获取新闻搜索页
-    search_url = f"https://finance.yahoo.com/quote/{ticker}?p={ticker}"
-    r = requests.get(search_url, headers={"User-Agent": "Mozilla/5.0"})
+    headers = {"User-Agent": "Mozilla/5.0"}
+    url = f"https://finance.yahoo.com/quote/{ticker}?p={ticker}"
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, "html.parser")
 
-    if "https://finance.yahoo.com/news/" not in r.text:
+    # 尝试抓取第一个新闻链接
+    news_link = None
+    for a in soup.find_all("a", href=True):
+        if "/news/" in a["href"]:
+            news_link = "https://finance.yahoo.com" + a["href"]
+            break
+
+    if not news_link:
         return ["No news found."], [], []
 
-    # 提取第一个新闻链接
-    start = r.text.find("https://finance.yahoo.com/news/")
-    end = r.text.find('"', start)
-    article_url = r.text[start:end]
+    # 抓正文内容
+    article_res = requests.get(news_link, headers=headers)
+    article_soup = BeautifulSoup(article_res.text, "html.parser")
+    paras = article_soup.find_all("p")
+    content = " ".join(p.get_text() for p in paras[:5])  # 最多前 5 段
 
-    try:
-        article = Article(article_url)
-        article.download()
-        article.parse()
-        article.nlp()  # 可选：提取摘要
-        summary = article.summary or article.text[:500]
-    except Exception:
-        summary = "Failed to load article."
-
-    return [summary], [], []
+    return [content], [], []

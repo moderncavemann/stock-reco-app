@@ -19,7 +19,7 @@ if st.button("Analyze"):
     texts, images, _ = fetch_multimodal_data(ticker)
 
     score_text = analyze_text(texts[0]) if texts else 0.0
-   score_image = 0.0
+    score_image = 0.0
 if images:
     try:
         img_response = requests.get(images[0])

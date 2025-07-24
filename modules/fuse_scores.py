@@ -1,29 +1,27 @@
-def fuse_scores(text_score=None, image_score=None, audio_score=None):
+def fuse_scores(text_score=None, image_score=None):
     """
-    融合各模态得分，可根据需要设定权重。
-    如果某个模态为空，则只融合有效模态。
+    融合文本与图片模态得分
     """
-
     scores = []
     weights = []
 
     if text_score is not None:
         scores.append(text_score)
-        weights.append(0.6)  # 文本权重
+        weights.append(0.7)
 
     if image_score is not None:
         scores.append(image_score)
-        weights.append(0.3)  # 图片权重
-
-    if audio_score is not None:
-        scores.append(audio_score)
-        weights.append(0.1)  # 音频权重
+        weights.append(0.3)
 
     if not scores:
-        return 0.0
+        return "Hold", 0.0
 
-    # 加权平均
-    weighted_sum = sum(s * w for s, w in zip(scores, weights))
-    total_weight = sum(weights)
+    final_score = sum(s * w for s, w in zip(scores, weights)) / sum(weights)
 
-    return round(weighted_sum / total_weight, 3)
+    # 生成推荐标签
+    if final_score >= 0.6:
+        return "Buy", round(final_score, 3)
+    elif final_score <= 0.4:
+        return "Sell", round(final_score, 3)
+    else:
+        return "Hold", round(final_score, 3)

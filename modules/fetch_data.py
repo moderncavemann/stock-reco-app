@@ -1,26 +1,20 @@
 import requests
-from bs4 import BeautifulSoup
 
 def fetch_multimodal_data(ticker):
-    headers = {"User-Agent": "Mozilla/5.0"}
-    url = f"https://finance.yahoo.com/quote/{ticker}?p={ticker}"
-    res = requests.get(url, headers=headers)
-    soup = BeautifulSoup(res.text, "html.parser")
+    api_key = "your_finnhub_api_key"  # 替换成你自己的 API key
+    url = f"https://finnhub.io/api/v1/company-news?symbol={ticker}&from=2024-07-01&to=2024-07-24&token={api_key}"
+    res = requests.get(url)
+    
+    if res.status_code != 200:
+        return ["Failed to fetch news."], [], []
 
-    # 尝试抓取第一个新闻链接
-    news_link = None
-    for a in soup.find_all("a", href=True):
-        if "/news/" in a["href"]:
-            news_link = "https://finance.yahoo.com" + a["href"]
-            break
-
-    if not news_link:
+    data = res.json()
+    if not data:
         return ["No news found."], [], []
 
-    # 抓正文内容
-    article_res = requests.get(news_link, headers=headers)
-    article_soup = BeautifulSoup(article_res.text, "html.parser")
-    paras = article_soup.find_all("p")
-    content = " ".join(p.get_text() for p in paras[:5])  # 最多前 5 段
+    texts = [article['headline'] + ". " + article.get('summary', '') for article in data[:2]]
+    images = [article['image'] for article in data[:2] if article.get('image')]
+    audios = []  # 暂不处理音频
 
-    return [content], [], []
+    return texts, images, audios
+

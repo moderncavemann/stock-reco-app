@@ -19,10 +19,18 @@ if st.button("Analyze"):
     texts, images, _ = fetch_multimodal_data(ticker)
 
     score_text = analyze_text(texts[0]) if texts else 0.0
-    score_image = (
-        analyze_image(Image.open(BytesIO(requests.get(images[0]).content)))
-        if images else 0.0
-    )
+   score_image = 0.0
+if images:
+    try:
+        img_response = requests.get(images[0])
+        if img_response.status_code == 200:
+            img = Image.open(BytesIO(img_response.content))
+            score_image = analyze_image(img)
+        else:
+            st.warning("⚠️ Unable to load image for analysis.")
+    except Exception as e:
+        st.warning(f"⚠️ Error analyzing image: {e}")
+
 
     result, final_score = fuse_scores(score_text, score_image)
     explanation = generate_explanation(score_text, score_image)

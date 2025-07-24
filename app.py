@@ -3,7 +3,6 @@ from PIL import Image
 from modules.fetch_data import fetch_multimodal_data
 from modules.analyze_text import analyze_text
 from modules.analyze_image import analyze_image
-from modules.analyze_audio import analyze_audio
 from modules.fuse_scores import fuse_scores
 from modules.explain import generate_explanation
 
@@ -19,8 +18,7 @@ if st.button("Analyze"):
 
     score_text = analyze_text(texts[0]) if texts else 0.0
     score_image = analyze_image(Image.open(images[0])) if images else 0.0
-    score_audio = analyze_audio(audios[0]) if audios else 0.0
-
+    
     result, final_score = fuse_scores(score_text, score_image, score_audio)
     explanation = generate_explanation(score_text, score_image, score_audio)
 

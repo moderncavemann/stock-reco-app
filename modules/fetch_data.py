@@ -1,7 +1,7 @@
 import requests
 
 def fetch_multimodal_data(ticker):
-    api_key = "your_finnhub_api_key"  # 替换成你自己的 API key
+    api_key = "d20tfn9r01qvvf1k2ao0d20tfn9r01qvvf1k2aog"  
     url = f"https://finnhub.io/api/v1/company-news?symbol={ticker}&from=2024-07-01&to=2024-07-24&token={api_key}"
     res = requests.get(url)
     
@@ -14,7 +14,7 @@ def fetch_multimodal_data(ticker):
 
     texts = [article['headline'] + ". " + article.get('summary', '') for article in data[:2]]
     images = [article['image'] for article in data[:2] if article.get('image')]
-    audios = []  # 暂不处理音频
+   
 
-    return texts, images, audios
+    return texts, images
 

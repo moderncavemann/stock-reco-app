@@ -1,17 +1,21 @@
-def fuse_scores(text_score=None, image_score=None):
+def fuse_scores(text_score=None, image_score=None, audio_score=None):
     """
-    融合文本与图片模态得分，输出推荐结果和融合得分
+    融合多模态得分（文本、图像、音频），输出推荐结果和融合得分
     """
     scores = []
     weights = []
 
     if text_score is not None:
         scores.append(text_score)
-        weights.append(0.7)
+        weights.append(0.6)
 
     if image_score is not None:
         scores.append(image_score)
         weights.append(0.3)
+
+    if audio_score is not None:
+        scores.append(audio_score)
+        weights.append(0.1)
 
     if not scores:
         return "Hold", 0.0

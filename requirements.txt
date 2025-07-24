@@ -6,3 +6,4 @@ torchaudio
 requests
 beautifulsoup4
 speechbrain
+sentencepiece==0.1.99

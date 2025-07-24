@@ -1,20 +1,18 @@
-def generate_explanation(score_text, score_image, score_audio):
-    reasons = []
+def generate_explanation(score_text=None, score_image=None, score_audio=None):
+    explanation_parts = []
 
-    if score_text > 0.2:
-        reasons.append("Text sentiment is positive.")
-    elif score_text < -0.2:
-        reasons.append("Text sentiment is negative.")
+    if score_text is not None:
+        explanation_parts.append(f"📝 **Text sentiment score**: {score_text:.2f}")
 
-    if score_image > 0.2:
-        reasons.append("Images reflect optimism.")
-    elif score_image < -0.2:
-        reasons.append("Images reflect pessimism.")
+    if score_image is not None:
+        explanation_parts.append(f"🖼️ **Image sentiment score**: {score_image:.2f}")
 
-    if score_audio > 0.2:
-        reasons.append("Audio tone is confident.")
-    elif score_audio < -0.2:
-        reasons.append("Audio tone suggests concern.")
+    if score_audio is not None:
+        explanation_parts.append(f"🔊 **Audio sentiment score**: {score_audio:.2f}")
 
-    return " ".join(reasons) or "No strong signals detected."
+    if not explanation_parts:
+        return "No explanation available."
+
+    return "\n\n".join(explanation_parts)
+
 

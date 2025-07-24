@@ -13,11 +13,11 @@ def fetch_multimodal_data(ticker):
     res = requests.get(url)
 
     if res.status_code != 200:
-        return ["Failed to fetch news."], [], []
+        return ["Failed to fetch news."], []
 
     data = res.json()
     if not data:
-        return ["No news found."], [], []
+        return ["No news found."], []
 
     # ✅ 只保留最近 6 小时的新闻
     cutoff_time = now - timedelta(hours=6)
@@ -31,11 +31,10 @@ def fetch_multimodal_data(ticker):
             continue
 
     if not recent_articles:
-        return ["No recent news in the last 6 hours."], [], []
+        return ["No recent news in the last 6 hours."], []
 
     texts = [a['headline'] + ". " + a.get('summary', '') for a in recent_articles[:2]]
     images = [a['image'] for a in recent_articles[:2] if a.get('image')]
 
-    audios = []  # 暂不使用音频
+    return texts, images
 
-    return texts, images, audios

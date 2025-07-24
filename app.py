@@ -19,8 +19,8 @@ if st.button("Analyze"):
     score_text = analyze_text(texts[0]) if texts else 0.0
     score_image = analyze_image(Image.open(images[0])) if images else 0.0
     
-    result, final_score = fuse_scores(score_text, score_image, score_audio)
-    explanation = generate_explanation(score_text, score_image, score_audio)
+    result, final_score = fuse_scores(score_text, score_image)
+    explanation = generate_explanation(score_text, score_image)
 
     st.markdown(f"### ✅ Recommendation: **{result}**")
     st.metric("Overall Score", round(final_score, 3))

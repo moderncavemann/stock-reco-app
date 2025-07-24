@@ -14,7 +14,8 @@ ticker = st.text_input("Enter stock symbol (e.g., TSLA, AAPL)")
 if st.button("Analyze"):
     st.info("Fetching and analyzing data...")
 
-    texts, images = fetch_multimodal_data(ticker)
+    texts, images, _ = fetch_multimodal_data(ticker)
+
 
     score_text = analyze_text(texts[0]) if texts else 0.0
     score_image = analyze_image(Image.open(images[0])) if images else 0.0
